@@ -1,47 +1,70 @@
 var SpeechRecognition = window.webkitSpeechRecognition;
   
-var my_agent= new SpeechRecognition();
+var recognition = new SpeechRecognition();
 
- 
-function my_start()
+var Textbox = document.getElementById("textbox"); 
+
+function start()
 {
-    document.getElementById("textbox").innerHTML = ""; 
-    my_agent.start();
+    Textbox.innerHTML = ""; 
+    recognition.start();
 } 
  
-my_agent.onresult = function(event) {
+recognition.onresult = function(event) {
 
  console.log(event); 
- document.getElementById("textbox").innerHTML = event.results[0][0].transcript;
 
- agent_speak();
+var Content = event.results[0][0].transcript;
 
+    Textbox.innerHTML = Content;
+    console.log(Content);
+      if(Content =="take my selfie")
+      {
+        console.log("taking selfie --- ");
+        speak();
+      }
 }
 
-function agent_speak(){
 
+function speak(){
     var synth = window.speechSynthesis;
 
-    var speak_data = document.getElementById("textbox").innerHTML;
+    speak_data = "Taking you Selfie in 5 seconds";
 
-    var utter_data = new SpeechSynthesisUtterance(speak_data);
+    var utterThis = new SpeechSynthesisUtterance(speak_data);
 
-    synth.speak(utter_data);
+    synth.speak(utterThis);
 
-    Webcam.attach(my_cam);
+    Webcam.attach(camera);
 
+    setTimeout(function()
+    { 
+        take_selfie(); 
+        save();
+    }, 5000);
 }
 
+ 
+camera = document.getElementById("camera");
 Webcam.set({
-    width: 360,
-    height: 250,
-    image_format: 'png',
-    png_quality:90
-     
+    width:360,
+    height:250,
+    image_format : 'jpeg',
+    jpeg_quality:90
 });
 
-my_cam = document.getElementById('camera');
+function take_selfie()
+{
+    Webcam.snap(function(data_uri) {
+        document.getElementById("result").innerHTML = '<img id="selfie_image" src="'+data_uri+'"/>';
+    });
+}
 
 
-
-
+function save()
+{
+  link = document.getElementById("link");
+  image = document.getElementById("selfie_image").src ;
+  link.href = image;
+  link.click();
+}
